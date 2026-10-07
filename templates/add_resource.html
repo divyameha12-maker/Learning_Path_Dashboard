@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Learning Resource</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 90px;
+            resize: vertical;
+        }
+
+        .file-section,
+        .url-section {
+            margin-top: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Add Learning Resource</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <label>Learning Path</label>
+
+        <select name="path_id" required>
+
+            <option value="">Select Learning Path</option>
+
+            {% for path in learning_paths %}
+                <option value="{{ path['path_id'] }}">
+                    {{ path['title'] }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+
+        <label>Resource Title</label>
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Example: Introduction to Machine Learning"
+            required
+        >
+
+
+        <label>Resource Type</label>
+
+        <select name="resource_type" id="resource_type" required>
+
+            <option value="">Select Resource Type</option>
+
+            <option value="PDF">PDF</option>
+
+            <option value="Word">Word Document</option>
+
+            <option value="Video">Video</option>
+
+            <option value="Literature">Academic Literature</option>
+
+        </select>
+
+
+        <div class="file-section">
+
+            <label>Upload File</label>
+
+            <input
+                type="file"
+                name="resource_file"
+                accept=".pdf,.doc,.docx"
+            >
+
+        </div>
+
+
+        <div class="url-section">
+
+            <label>Resource URL</label>
+
+            <input
+                type="url"
+                name="url"
+                placeholder="https://..."
+            >
+
+        </div>
+
+
+        <label>Description</label>
+
+        <textarea
+            name="description"
+            placeholder="Describe this learning resource"
+        ></textarea>
+
+
+        <button type="submit">
+            Add Resource
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

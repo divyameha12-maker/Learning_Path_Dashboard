@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Skill</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 450px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Create Skill</h2>
+
+    <form method="POST">
+
+        <label>Skill Name</label>
+
+        <input
+            type="text"
+            name="skill_name"
+            placeholder="Example: Machine Learning"
+            required
+        >
+
+        <label>Description</label>
+
+        <textarea
+            name="description"
+            placeholder="Enter a description of the skill"
+        ></textarea>
+
+        <button type="submit">
+            Create Skill
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

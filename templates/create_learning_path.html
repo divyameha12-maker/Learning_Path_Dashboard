@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Learning Path</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 450px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .publications-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+            max-height: 180px;
+            overflow-y: auto;
+            background-color: #fafafa;
+        }
+
+        .publication-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .publication-item input {
+            width: auto;
+            margin-top: 3px;
+        }
+
+        .publication-item label {
+            margin: 0;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .no-publications {
+            color: #777;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Create Learning Path</h2>
+
+    <form method="POST">
+
+        <!-- Skill -->
+
+        <label>Skill</label>
+
+        <select name="skill_id" required>
+
+            <option value="">Select a Skill</option>
+
+            {% for skill in skills %}
+
+                <option value="{{ skill['skill_id'] }}">
+                    {{ skill['skill_name'] }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <!-- Learning Path Title -->
+
+        <label>Learning Path Title</label>
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Example: Machine Learning Fundamentals"
+            required
+        >
+
+
+        <!-- Description -->
+
+        <label>Description</label>
+
+        <textarea
+            name="description"
+            placeholder="Enter the learning path description"
+        ></textarea>
+
+
+        <!-- Academic Publications -->
+
+        <label>Academic Publications</label>
+
+        <div class="publications-box">
+
+            {% if publications %}
+
+                {% for publication in publications %}
+
+                    <div class="publication-item">
+
+                        <input
+                            type="checkbox"
+                            name="publication_ids"
+                            value="{{ publication['publication_id'] }}"
+                            id="publication_{{ publication['publication_id'] }}"
+                        >
+
+                        <label for="publication_{{ publication['publication_id'] }}">
+
+                            {{ publication['title'] }}
+
+                            {% if publication['year'] %}
+                                ({{ publication['year'] }})
+                            {% endif %}
+
+                        </label>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="no-publications">
+                    No academic publications have been added yet.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Submit -->
+
+        <button type="submit">
+            Create Learning Path
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

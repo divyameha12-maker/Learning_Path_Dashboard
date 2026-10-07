@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Learning Path</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .resource {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+        }
+
+        .resource h3 {
+            margin-top: 0;
+        }
+
+        .type {
+            display: inline-block;
+            background-color: #e8f0fe;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .view-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .view-button:hover {
+            background-color: #555;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- LEARNING PATH INFORMATION -->
+
+    <div class="header">
+
+        <h1>
+            {{ learning_path['title'] }}
+        </h1>
+
+        <p>
+            {{ learning_path['description'] }}
+        </p>
+
+    </div>
+
+
+    <!-- LEARNING RESOURCES -->
+
+    <h2>
+        Learning Resources
+    </h2>
+
+
+    {% if resources %}
+
+        {% for resource in resources %}
+
+            <div class="resource">
+
+                <h3>
+                    {{ resource['title'] }}
+                </h3>
+
+
+                <span class="type">
+                    {{ resource['resource_type'] }}
+                </span>
+
+
+                <p>
+                    {{ resource['description'] }}
+                </p>
+
+
+                <!-- PDF / FILE RESOURCE -->
+
+                {% if resource['file_path'] %}
+
+                    {% set filename = resource['file_path'].replace('\\', '/').split('/')[-1] %}
+
+                    <a
+                        class="view-button"
+                        href="{{ url_for('uploaded_resource', filename=filename) }}"
+                        target="_blank"
+                    >
+                        View Resource
+                    </a>
+
+
+                <!-- ONLINE URL RESOURCE -->
+
+                {% elif resource['url'] %}
+
+                    <a
+                        class="view-button"
+                        href="{{ resource['url'] }}"
+                        target="_blank"
+                    >
+                        Open Resource
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <p>
+            No learning resources added yet.
+        </p>
+
+    {% endif %}
+
+
+</div>
+
+</body>
+
+</html>

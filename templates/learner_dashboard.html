@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Learner Dashboard</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        .header {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        /* ==============================
+           LEARNING PATH SELECTION
+        ============================== */
+
+        .path-box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .path-box h2 {
+            margin-top: 0;
+        }
+
+        .path-select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+
+        /* ==============================
+           SELECTED LEARNING PATH
+        ============================== */
+
+        .selected-path {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .selected-path h2 {
+            margin-top: 0;
+        }
+
+        /* ==============================
+           STATISTICS
+        ============================== */
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+        }
+
+        .stat-number {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        /* ==============================
+           PROGRESS
+        ============================== */
+
+        .progress-box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #333;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        /* ==============================
+           ACADEMIC PUBLICATIONS
+        ============================== */
+
+        .publication {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .publication h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .publication p {
+            margin: 8px 0;
+        }
+
+        .publication-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 18px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .publication-link:hover {
+            background-color: #555;
+        }
+
+        .no-publication {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ==============================
+           LEARNING RESOURCES
+        ============================== */
+
+        .resource {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .resource h3 {
+            margin-top: 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 5px;
+            background-color: #e8f0fe;
+            font-size: 13px;
+        }
+
+        .open-button,
+        .finish-button,
+        .complete-button {
+
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .open-button:hover,
+        .finish-button:hover,
+        .complete-button:hover {
+            background-color: #555;
+        }
+
+        .completed-button {
+            margin-top: 12px;
+            padding: 10px 18px;
+            background-color: #777;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: default;
+        }
+
+        .no-resource {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ==============================
+           LOGOUT
+        ============================== */
+
+        .logout-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .logout-button:hover {
+            background-color: #555;
+        }
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media(max-width: 800px) {
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media(max-width: 500px) {
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <div class="header">
+
+        <h1>
+            Learner Dashboard
+        </h1>
+
+        <p>
+            Welcome, {{ learner['name'] }}
+        </p>
+
+        <p>
+            Email: {{ learner['email'] }}
+        </p>
+
+        <a
+            class="logout-button"
+            href="{{ url_for('learner_logout') }}"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
+         LEARNING PATH SELECTION
+    ================================================== -->
+
+    <div class="path-box">
+
+        <h2>
+            Available Learning Paths
+        </h2>
+
+        {% if learning_paths %}
+
+            <form
+                method="GET"
+                action="{{ url_for('learner_dashboard') }}"
+            >
+
+                <label for="path_id">
+                    Select Learning Path:
+                </label>
+
+                <select
+                    class="path-select"
+                    id="path_id"
+                    name="path_id"
+                    onchange="this.form.submit()"
+                >
+
+                    {% for path in learning_paths %}
+
+                        <option
+                            value="{{ path['path_id'] }}"
+                            {% if selected_path_id == path['path_id'] %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ path['title'] }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </form>
+
+        {% else %}
+
+            <p>
+                No learning paths are available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =================================================
+         SELECTED LEARNING PATH
+    ================================================== -->
+
+    {% if selected_path %}
+
+        <div class="selected-path">
+
+            <h2>
+                {{ selected_path['title'] }}
+            </h2>
+
+            {% if selected_path['skill_name'] %}
+
+                <p>
+
+                    <strong>
+                        Skill:
+                    </strong>
+
+                    {{ selected_path['skill_name'] }}
+
+                </p>
+
+            {% endif %}
+
+
+            {% if selected_path['description'] %}
+
+                <p>
+                    {{ selected_path['description'] }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         LEARNING STATISTICS
+    ================================================== -->
+
+    <div class="stats-container">
+
+
+        <div class="stat-box">
+
+            <h3>
+                Total Resources
+            </h3>
+
+            <div class="stat-number">
+                {{ resources|length }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <h3>
+                Completed
+            </h3>
+
+            <div class="stat-number">
+                {{ completed_count }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <h3>
+                In Progress
+            </h3>
+
+            <div class="stat-number">
+                {{ in_progress_count }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <h3>
+                Total Learning Time
+            </h3>
+
+            <div class="stat-number">
+                {{ total_learning_minutes }} min
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         OVERALL PROGRESS
+    ================================================== -->
+
+    <div class="progress-box">
+
+        <h2>
+            Overall Learning Progress
+        </h2>
+
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                data-progress="{{ overall_progress }}"
+            >
+            </div>
+
+        </div>
+
+
+        <p class="progress-text">
+
+            {{ overall_progress }}% completed
+
+        </p>
+
+
+        <p>
+
+            Average Learning Time:
+
+            {{ average_learning_minutes }}
+
+            minutes
+
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         ACADEMIC PUBLICATIONS
+    ================================================== -->
+
+    <h2>
+        Academic Publications
+    </h2>
+
+
+    {% if publications %}
+
+        {% for publication in publications %}
+
+            <div class="publication">
+
+                <h3>
+                    {{ publication['title'] }}
+                </h3>
+
+
+                <p>
+
+                    <strong>
+                        Authors:
+                    </strong>
+
+                    {{ publication['authors'] }}
+
+                </p>
+
+
+                {% if publication['year'] %}
+
+                    <p>
+
+                        <strong>
+                            Year:
+                        </strong>
+
+                        {{ publication['year'] }}
+
+                    </p>
+
+                {% endif %}
+
+
+                {% if publication['topic'] %}
+
+                    <p>
+
+                        <strong>
+                            Topic:
+                        </strong>
+
+                        {{ publication['topic'] }}
+
+                    </p>
+
+                {% endif %}
+
+
+                {% if publication['source'] %}
+
+                    <p>
+
+                        <strong>
+                            Source:
+                        </strong>
+
+                        {{ publication['source'] }}
+
+                    </p>
+
+                {% endif %}
+
+
+                {% if publication['url'] %}
+
+                    <a
+                        class="publication-link"
+                        href="{{ publication['url'] }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        View Publication
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="no-publication">
+
+            <p>
+                No academic publications are available
+                for this learning path.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         LEARNING RESOURCES
+    ================================================== -->
+
+    <h2>
+        Learning Resources
+    </h2>
+
+
+    {% if resources %}
+
+        {% for resource in resources %}
+
+            <div class="resource">
+
+
+                <h3>
+                    {{ resource['title'] }}
+                </h3>
+
+
+                <p>
+
+                    <strong>
+                        Resource Type:
+                    </strong>
+
+                    {{ resource['resource_type'] }}
+
+                </p>
+
+
+                {% if resource['description'] %}
+
+                    <p>
+                        {{ resource['description'] }}
+                    </p>
+
+                {% endif %}
+
+
+                <span class="status">
+
+                    {{ resource['status'] }}
+
+                </span>
+
+
+                <p class="progress-text">
+
+                    Progress:
+
+                    {{ resource['progress_percentage'] }}%
+
+                </p>
+
+
+                <!-- =====================================
+                     START LEARNING
+                ====================================== -->
+
+
+                {% if resource['status'] != 'Completed' %}
+
+
+                    {% if resource['file_path'] %}
+
+                        <a
+                            class="open-button"
+                            href="{{ url_for(
+                                'start_learning',
+                                resource_id=resource['resource_id']
+                            ) }}"
+                            target="_blank"
+                        >
+                            Start Learning
+                        </a>
+
+
+                    {% elif resource['url'] %}
+
+                        <a
+                            class="open-button"
+                            href="{{ url_for(
+                                'start_learning',
+                                resource_id=resource['resource_id']
+                            ) }}"
+                            target="_blank"
+                        >
+                            Start Learning
+                        </a>
+
+                    {% endif %}
+
+
+                {% endif %}
+
+
+                <!-- =====================================
+                     FINISH LEARNING
+                ====================================== -->
+
+
+                {% if resource['status'] != 'Completed' %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'finish_learning',
+                            resource_id=resource['resource_id']
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="finish-button"
+                        >
+                            Finish Learning
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                <!-- =====================================
+                     COMPLETE RESOURCE
+                ====================================== -->
+
+
+                {% if resource['status'] == 'Completed' %}
+
+                    <button
+                        type="button"
+                        class="completed-button"
+                        disabled
+                    >
+                        ✓ Completed
+                    </button>
+
+
+                {% else %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'complete_resource',
+                            resource_id=resource['resource_id']
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="complete-button"
+                        >
+                            Mark as Completed
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+            </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="no-resource">
+
+            <p>
+                No learning resources are available
+                for this learning path.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- =================================================
+     PROGRESS BAR SCRIPT
+================================================== -->
+
+<script>
+
+    const progressFill =
+        document.querySelector(".progress-fill");
+
+
+    if (progressFill) {
+
+        const progress =
+            parseFloat(
+                progressFill.getAttribute(
+                    "data-progress"
+                )
+            );
+
+
+        progressFill.style.width =
+            Math.min(
+                Math.max(progress, 0),
+                100
+            ) + "%";
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
