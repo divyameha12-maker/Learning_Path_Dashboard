@@ -38,7 +38,7 @@ app.secret_key = "learning_path_dashboard_secret_key"
 
 # ===================================================
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DATABASE = os.path.join(
     BASE_DIR,
