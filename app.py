@@ -215,7 +215,7 @@ def test_database():
 
     result = connection.execute("""
 
-        SELECT COUNT(*\\\\**) AS count
+        SELECT COUNT(*) AS count
 
         FROM users
 
@@ -2072,6 +2072,26 @@ def learner_dashboard():
 
     )
 
+    # GET ACADEMIC PUBLICATIONS FOR THE SELECTED LEARNING PATH
+    publications = []
+
+    if selected_path_id is not None:
+        publications = connection.execute("""
+            SELECT
+                p.publication_id,
+                p.title,
+                p.authors,
+                p.year,
+                p.url,
+                p.topic,
+                p.source
+            FROM publications p
+            INNER JOIN learning_path_publications lpp
+                ON p.publication_id = lpp.publication_id
+            WHERE lpp.path_id = ?
+            ORDER BY p.year DESC, p.publication_id DESC
+        """, (selected_path_id,)).fetchall()
+
     connection.close()
 
     return render_template(
@@ -2087,6 +2107,8 @@ def learner_dashboard():
         selected_path_id=selected_path_id,
 
         resources=resources,
+
+        publications=publications,
 
         overall_progress=overall_progress,
 
@@ -2678,7 +2700,7 @@ def start_learning(resource_id):
 
                 "In Progress",
 
-                50,
+                0,
 
                 existing_progress["progress_id"]
 
@@ -2712,7 +2734,7 @@ def start_learning(resource_id):
 
             "In Progress",
 
-            50
+            0
 
         ))
 
@@ -3044,7 +3066,7 @@ def finish_learning(resource_id):
 
                 "In Progress",
 
-                50,
+                0,
 
                 existing_progress["progress_id"]
 
@@ -3078,7 +3100,7 @@ def finish_learning(resource_id):
 
             "In Progress",
 
-            50
+            0
 
         ))
 
