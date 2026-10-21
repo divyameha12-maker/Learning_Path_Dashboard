@@ -21,6 +21,7 @@ import sqlite3
 import os
 
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 # ===================================================
 
@@ -1282,256 +1283,135 @@ def create_learning_path():
 )
 
 def add_resource():
-
-    instructor_id = session.get(
-
-        "instructor_id"
-
-    )
+    instructor_id = session.get("instructor_id")
 
     if instructor_id is None:
-
-        return redirect(
-
-            url_for("login")
-
-        )
+        return redirect(url_for("login"))
 
     connection = get_db_connection()
 
-    learning_paths = connection.execute("""
+    try:
+        learning_paths = connection.execute("""
+            SELECT path_id, title
+            FROM learning_paths
+            WHERE created_by = ?
+            ORDER BY title
+        """, (instructor_id,)).fetchall()
 
-        SELECT
+        if request.method == "POST":
+            path_id = request.form.get("path_id", "").strip()
+            title = request.form.get("title", "").strip()
+            resource_type = request.form.get("resource_type", "").strip()
+            description = request.form.get("description", "").strip()
+            url = request.form.get("url", "").strip()
+            file_path = None
 
-            path_id,
+            if not path_id or not title or not resource_type:
+                return render_template(
+                    "add_resource.html",
+                    learning_paths=learning_paths,
+                    error="Please fill all required fields."
+                )
 
-            title
+            try:
+                path_id = int(path_id)
+            except (TypeError, ValueError):
+                return render_template(
+                    "add_resource.html",
+                    learning_paths=learning_paths,
+                    error="Please select a valid learning path."
+                )
 
-        FROM learning_paths
+            path = connection.execute("""
+                SELECT path_id
+                FROM learning_paths
+                WHERE path_id = ?
+            """, (path_id,)).fetchone()
 
-        WHERE created_by = ?
+            if path is None:
+                return render_template(
+                    "add_resource.html",
+                    learning_paths=learning_paths,
+                    error="Please select a valid learning path."
+                )
 
-        ORDER BY title
+            uploaded_file = request.files.get("resource_file")
 
-    """, (
+            if uploaded_file and uploaded_file.filename:
+                # Normalize Windows-style paths and keep only the filename.
+                original_name = uploaded_file.filename.replace("\\", "/").split("/")[-1]
+                filename = secure_filename(original_name)
 
-        instructor_id,
+                if not filename:
+                    return render_template(
+                        "add_resource.html",
+                        learning_paths=learning_paths,
+                        error="Please choose a valid file."
+                    )
 
-    )).fetchall()
+                upload_folder = os.path.join(BASE_DIR, "uploads")
+                os.makedirs(upload_folder, exist_ok=True)
 
-    if request.method == "POST":
+                save_path = os.path.join(upload_folder, filename)
+                uploaded_file.save(save_path)
 
-        path_id = request.form.get(
+                # Store only a filename in SQLite, never a computer-specific path.
+                file_path = filename
 
-            "path_id"
+            if not file_path and not url:
+                return render_template(
+                    "add_resource.html",
+                    learning_paths=learning_paths,
+                    error="Please upload a file or provide a resource URL."
+                )
 
+            cursor = connection.execute("""
+                INSERT INTO resources
+                    (title, resource_type, file_path, url, description)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                title,
+                resource_type,
+                file_path,
+                url,
+                description
+            ))
+
+            resource_id = cursor.lastrowid
+
+            result = connection.execute("""
+                SELECT MAX(sequence_order) AS max_order
+                FROM learning_path_resources
+                WHERE path_id = ?
+            """, (path_id,)).fetchone()
+
+            sequence_order = (result["max_order"] or 0) + 1
+
+            connection.execute("""
+                INSERT INTO learning_path_resources
+                    (path_id, resource_id, sequence_order)
+                VALUES (?, ?, ?)
+            """, (path_id, resource_id, sequence_order))
+
+            connection.commit()
+            return "Learning resource added successfully!"
+
+        return render_template(
+            "add_resource.html",
+            learning_paths=learning_paths
         )
 
-        title = request.form.get(
-
-            "title",
-
-            ""
-
-        ).strip()
-
-        resource_type = request.form.get(
-
-            "resource_type",
-
-            ""
-
-        ).strip()
-
-        description = request.form.get(
-
-            "description",
-
-            ""
-
-        ).strip()
-
-        url = request.form.get(
-
-            "url",
-
-            ""
-
-        ).strip()
-
-        file_path = None
-
-        # -----------------------------------------------
-
-        # HANDLE FILE UPLOAD
-
-        # -----------------------------------------------
-
-        if "resource_file" in request.files:
-
-            file = request.files[
-
-                "resource_file"
-
-            ]
-
-            if file and file.filename:
-
-                filename = file.filename
-
-                upload_folder = os.path.join(
-
-                    BASE_DIR,
-
-                    "uploads"
-
-                )
-
-                os.makedirs(
-
-                    upload_folder,
-
-                    exist_ok=True
-
-                )
-
-                file_path = os.path.join(
-
-                    upload_folder,
-
-                    filename
-
-                )
-
-                file.save(
-
-                    file_path
-
-                )
-
-        # -----------------------------------------------
-
-        # INSERT RESOURCE
-
-        # -----------------------------------------------
-
-        cursor = connection.execute("""
-
-            INSERT INTO resources
-
-            (
-
-                title,
-
-                resource_type,
-
-                file_path,
-
-                url,
-
-                description
-
-            )
-
-            VALUES (?, ?, ?, ?, ?)
-
-        """, (
-
-            title,
-
-            resource_type,
-
-            file_path,
-
-            url,
-
-            description
-
-        ))
-
-        resource_id = cursor.lastrowid
-
-        # -----------------------------------------------
-
-        # FIND NEXT ORDER
-
-        # -----------------------------------------------
-
-        result = connection.execute("""
-
-            SELECT
-
-                MAX(sequence_order) AS max_order
-
-            FROM learning_path_resources
-
-            WHERE path_id = ?
-
-        """, (
-
-            path_id,
-
-        )).fetchone()
-
-        if result["max_order"] is None:
-
-            sequence_order = 1
-
-        else:
-
-            sequence_order = (
-
-                result["max_order"] + 1
-
-            )
-
-        # -----------------------------------------------
-
-        # LINK RESOURCE TO PATH
-
-        # -----------------------------------------------
-
-        connection.execute("""
-
-            INSERT INTO learning_path_resources
-
-            (
-
-                path_id,
-
-                resource_id,
-
-                sequence_order
-
-            )
-
-            VALUES (?, ?, ?)
-
-        """, (
-
-            path_id,
-
-            resource_id,
-
-            sequence_order
-
-        ))
-
-        connection.commit()
-
+    except Exception:
+        connection.rollback()
+        app.logger.exception("Unable to add learning resource")
+        return render_template(
+            "add_resource.html",
+            learning_paths=learning_paths,
+            error="Unable to add the resource. Please check the server logs."
+        )
+
+    finally:
         connection.close()
-
-        return "Learning resource added successfully!"
-
-    connection.close()
-
-    return render_template(
-
-        "add_resource.html",
-
-        learning_paths=learning_paths
-
-    )
 
 # ===================================================
 
@@ -1640,21 +1520,19 @@ def view_learning_path(path_id):
 )
 
 def uploaded_resource(filename):
+    upload_folder = os.path.join(BASE_DIR, "uploads")
 
-    upload_folder = os.path.join(
+    # Older database rows may contain a full Windows path.
+    # Convert it to a simple filename before serving the file.
+    filename = str(filename).replace("\\", "/").split("/")[-1]
 
-        BASE_DIR,
-
-        "uploads"
-
-    )
+    if not filename:
+        return "Invalid file name.", 400
 
     return send_from_directory(
-
         upload_folder,
-
-        filename
-
+        filename,
+        as_attachment=False
     )
 
 # ===================================================
@@ -2774,23 +2652,12 @@ def start_learning(resource_id):
     # -----------------------------------------------
 
     if resource["file_path"]:
-
-        filename = os.path.basename(
-
-            resource["file_path"]
-
-        )
+        # Support both new filename-only rows and old Windows absolute paths.
+        stored_path = str(resource["file_path"]).replace("\\", "/")
+        filename = stored_path.split("/")[-1]
 
         return redirect(
-
-            url_for(
-
-                "uploaded_resource",
-
-                filename=filename
-
-            )
-
+            url_for("uploaded_resource", filename=filename)
         )
 
     # -----------------------------------------------
