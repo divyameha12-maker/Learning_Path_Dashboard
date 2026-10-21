@@ -1,157 +1,328 @@
-<!DOCTYPE html>
-<html>
 
-<head>
+{% extends "base_instructor.html" %}
 
-    <title>Instructor Dashboard</title>
+{% block title %}Instructor Dashboard{% endblock %}
 
-    <style>
+{% block content %}
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 40px;
-        }
+<style>
+    .dashboard { width:100%; min-width:0; }
+    .welcome {
+        display:flex; align-items:center; justify-content:space-between;
+        gap:20px; padding:26px 30px; margin-bottom:20px;
+        border-radius:16px;
+        background:linear-gradient(110deg,#deebff,#c7e0ff);
+        color:#173b70;
+    }
+    .welcome h1 { margin:0 0 8px; font-size:28px; }
+    .welcome p { margin:0; color:#45658e; line-height:1.6; }
+    .welcome-art { font-size:42px; }
+    .stats-grid {
+        display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:14px; margin-bottom:20px;
+    }
+    .stat-card {
+        display:flex; align-items:center; gap:14px; min-width:0;
+        padding:20px 16px; background:#fff;
+        border:1px solid #e2eaf7; border-radius:14px;
+        box-shadow:0 4px 16px #18345b08;
+    }
+    .stat-icon {
+        flex-shrink:0; width:48px; height:48px; display:grid;
+        place-items:center; border-radius:50%; font-size:23px;
+        background:#e4efff; color:#0868ed;
+    }
+    .stat-card:nth-child(2) .stat-icon { background:#dff9ee; color:#10a875; }
+    .stat-card:nth-child(3) .stat-icon { background:#f0e5ff; color:#8b45ed; }
+    .stat-card:nth-child(4) .stat-icon { background:#fff2d6; color:#d88700; }
+    .stat-label { color:#64748b; font-size:12px; line-height:1.5; }
+    .stat-value { color:#173b70; font-size:25px; font-weight:800; margin-top:4px; }
+    .panel { margin-bottom:20px; }
+    .panel-heading {
+        display:flex; align-items:center; justify-content:space-between;
+        flex-wrap:wrap; gap:12px; margin-bottom:18px;
+    }
+    .panel-heading h2 { margin:0; color:#173b70; font-size:20px; }
+    .primary-button,.manage-button,.view-button {
+        display:inline-flex; align-items:center; justify-content:center;
+        padding:10px 14px; border-radius:7px; text-decoration:none;
+        font-size:12px; font-weight:700; border:0; cursor:pointer;
+    }
+    .primary-button,.manage-button { background:#0868ed; color:#fff; }
+    .primary-button:hover,.manage-button:hover { background:#0758ca; }
+    .view-button { background:#edf4ff; color:#0868ed; }
+    .path-grid {
+        display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px;
+    }
+    .path-card {
+        min-width:0; padding:17px; border:1px solid #e0e9f8;
+        border-radius:12px; background:linear-gradient(140deg,#f7faff,#fff);
+    }
+    .path-top { display:flex; align-items:flex-start; gap:12px; }
+    .path-icon {
+        display:grid; place-items:center; flex-shrink:0;
+        width:42px; height:42px; border-radius:12px;
+        background:#e5efff; font-size:22px;
+    }
+    .path-card h3 {
+        margin:3px 0 8px; color:#173b70; font-size:15px;
+        overflow-wrap:anywhere;
+    }
+    .path-card p {
+        margin:0; color:#64748b; font-size:12px; line-height:1.6;
+        overflow-wrap:anywhere;
+    }
+    .path-meta { margin:16px 0 12px; color:#64748b; font-size:12px; }
+    .path-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .path-actions a { flex:1; }
+    .bottom-grid {
+        display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px;
+    }
+    .table-wrap { width:100%; overflow-x:auto; }
+    .dashboard table { width:100%; border-collapse:collapse; font-size:12px; }
+    .dashboard th {
+        text-align:left; padding:11px 9px; white-space:nowrap;
+        color:#405574; background:#f0f5fc;
+    }
+    .dashboard td {
+        padding:11px 9px; border-bottom:1px solid #edf1f7;
+        color:#334766; vertical-align:top; overflow-wrap:anywhere;
+    }
+    .dashboard tbody tr:hover { background:#f8fbff; }
+    .status {
+        display:inline-block; padding:4px 8px; border-radius:20px;
+        background:#dff8e9; color:#087443; font-size:11px;
+    }
+    .empty-state {
+        padding:20px; border:1px dashed #d1deef; border-radius:10px;
+        color:#64748b; line-height:1.6;
+    }
+    @media(max-width:1100px) {
+        .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .path-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media(max-width:700px) {
+        .welcome { padding:20px; }
+        .welcome h1 { font-size:23px; }
+        .welcome-art { font-size:30px; }
+        .path-grid,.bottom-grid { grid-template-columns:1fr; }
+    }
+    @media(max-width:450px) {
+        .stats-grid { grid-template-columns:1fr; }
+    }
+</style>
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
+<div class="dashboard">
 
-        .header,
-        .card {
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
+    <section class="welcome">
+        <div>
+            <h1>Welcome, {{ instructor['name'] }}!</h1>
+            <p>Create, manage, and organize learning paths for students.</p>
+        </div>
+        <div class="welcome-art" aria-hidden="true">👩‍🏫 📚</div>
+    </section>
 
-        h1 {
-            margin-top: 0;
-        }
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon">▣</div>
+            <div>
+                <div class="stat-label">Total Learning Paths</div>
+                <div class="stat-value">{{ total_paths }}</div>
+            </div>
+        </article>
 
-        .button {
-            display: inline-block;
-            padding: 12px 18px;
-            margin: 8px 8px 8px 0;
-            background-color: #333;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
+        <article class="stat-card">
+            <div class="stat-icon">▤</div>
+            <div>
+                <div class="stat-label">Total Resources</div>
+                <div class="stat-value">{{ total_resources }}</div>
+            </div>
+        </article>
 
-        .button:hover {
-            background-color: #555;
-        }
+        <article class="stat-card">
+            <div class="stat-icon">♙</div>
+            <div>
+                <div class="stat-label">Registered Learners</div>
+                <div class="stat-value">{{ total_learners }}</div>
+            </div>
+        </article>
 
-        .logout {
-            background-color: #777;
-        }
+        <article class="stat-card">
+            <div class="stat-icon">▥</div>
+            <div>
+                <div class="stat-label">Academic Publications</div>
+                <div class="stat-value">{{ total_publications }}</div>
+            </div>
+        </article>
+    </section>
 
-    </style>
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Your Learning Paths</h2>
+            <a class="primary-button"
+               href="{{ url_for('create_learning_path') }}">
+                + Create New Learning Path
+            </a>
+        </div>
 
-</head>
+        {% if learning_paths %}
+        <div class="path-grid">
+            {% for path in learning_paths %}
+            <article class="path-card">
+                <div class="path-top">
+                    <div class="path-icon">
+                        {% if 'machine learning' in path['title']|lower %}
+                            🧠
+                        {% elif 'full stack' in path['title']|lower %}
+                            💻
+                        {% elif 'network' in path['title']|lower %}
+                            🌐
+                        {% elif 'sustainable' in path['title']|lower %}
+                            🌱
+                        {% elif 'automata' in path['title']|lower %}
+                            🔤
+                        {% elif 'discrete' in path['title']|lower %}
+                            📐
+                        {% else %}
+                            📚
+                        {% endif %}
+                    </div>
 
+                    <div>
+                        <h3>{{ path['title'] }}</h3>
+                        <p>{{ path['description'] or 'Learning path and study materials.' }}</p>
+                    </div>
+                </div>
 
-<body>
+                <div class="path-meta">
+                    ▤ {{ path['resource_count'] }} resource(s)
+                </div>
 
-<div class="container">
+                <div class="path-actions">
+                    <a class="view-button"
+                       href="{{ url_for('create_learning_path') }}">
+                        Learning Paths
+                    </a>
+                    <a class="manage-button"
+                       href="{{ url_for('add_resource') }}">
+                        Manage Resources
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            No learning paths were returned by the dashboard query.
+            Check that the logged-in instructor owns the existing paths.
+            <a href="{{ url_for('create_learning_path') }}">Create a learning path</a>.
+        </div>
+        {% endif %}
+    </section>
 
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Quick Actions</h2>
+        </div>
 
-    <!-- Instructor Header -->
+        <div class="path-grid">
+            <article class="path-card">
+                <h3>Manage Skills</h3>
+                <p>Create and organize skills learners can develop.</p>
+                <br>
+                <a class="primary-button" href="{{ url_for('create_skill') }}">
+                    Create Skill
+                </a>
+            </article>
 
-    <div class="header">
+            <article class="path-card">
+                <h3>Learning Resources</h3>
+                <p>Add PDFs, videos, hyperlinks, and learning materials.</p>
+                <br>
+                <a class="primary-button" href="{{ url_for('add_resource') }}">
+                    Add Resource
+                </a>
+            </article>
 
-        <h1>Instructor Dashboard</h1>
+            <article class="path-card">
+                <h3>Academic Publications</h3>
+                <p>Manage research papers, books, and journals.</p>
+                <br>
+                <a class="primary-button" href="{{ url_for('publications') }}">
+                    Publications
+                </a>
+            </article>
+        </div>
+    </section>
 
-        <p>
-            Welcome, {{ instructor['name'] }}
-        </p>
+    <div class="bottom-grid">
 
-        <a
-            class="button logout"
-            href="{{ url_for('instructor_logout') }}"
-        >
-            Logout
-        </a>
+        <section class="panel" id="recent-learners">
+            <div class="panel-heading">
+                <h2>Recent Learners</h2>
+                <span class="stat-label">Latest registrations</span>
+            </div>
+
+            {% if recent_learners %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for learner in recent_learners %}
+                        <tr>
+                            <td>{{ learner['name'] }}</td>
+                            <td>{{ learner['email'] }}</td>
+                            <td><span class="status">Registered</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">No registered learners were returned by the dashboard query.</div>
+            {% endif %}
+        </section>
+
+        <section class="panel" id="analytics">
+            <div class="panel-heading">
+                <h2>Recent Resources</h2>
+                <span class="stat-label">Latest materials</span>
+            </div>
+
+            {% if recent_resources %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Resource Title</th>
+                            <th>Learning Path</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resource in recent_resources %}
+                        <tr>
+                            <td>{{ resource['title'] }}</td>
+                            <td>{{ resource['path_title'] }}</td>
+                            <td>{{ resource['resource_type'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">No resources were returned by the dashboard query.</div>
+            {% endif %}
+        </section>
 
     </div>
-
-
-    <!-- Learning Path Management -->
-
-    <div class="card">
-
-        <h2>Learning Path Management</h2>
-
-        <p>
-            Create skills and learning paths for learners.
-        </p>
-
-        <a
-            class="button"
-            href="{{ url_for('create_skill') }}"
-        >
-            Create Skill
-        </a>
-
-        <a
-            class="button"
-            href="{{ url_for('create_learning_path') }}"
-        >
-            Create Learning Path
-        </a>
-
-    </div>
-
-
-    <!-- Learning Resources -->
-
-    <div class="card">
-
-        <h2>Learning Resources</h2>
-
-        <p>
-            Add PDFs, videos and online learning resources
-            to a learning path.
-        </p>
-
-        <a
-            class="button"
-            href="{{ url_for('add_resource') }}"
-        >
-            Add Learning Resource
-        </a>
-
-    </div>
-
-
-    <!-- Academic Literature -->
-
-    <div class="card">
-
-        <h2>Academic Literature</h2>
-
-        <p>
-            Add and manage academic publications,
-            research papers, journals, books and other
-            learning references.
-        </p>
-
-        <a
-            class="button"
-            href="{{ url_for('publications') }}"
-        >
-            Academic Publications
-        </a>
-
-    </div>
-
 
 </div>
 
-</body>
-
-</html>
+{% endblock %}

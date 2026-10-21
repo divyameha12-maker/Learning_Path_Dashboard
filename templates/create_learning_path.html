@@ -1,204 +1,366 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Learning Path</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+{% extends "base_instructor.html" %}
+
+{% block title %}Create Learning Path{% endblock %}
+
+{% block content %}
+
+<style>
+    .learning-page {
+        width: 100%;
+        max-width: 1100px;
+        min-width: 0;
+        margin: 0 auto;
+    }
+
+    .learning-page .page-heading {
+        margin: 0 0 20px;
+    }
+
+    .learning-page .page-heading h1 {
+        margin: 0 0 8px;
+        color: #173b70;
+        font-size: 26px;
+        line-height: 1.3;
+    }
+
+    .learning-page .page-heading p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .learning-page .panel {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 26px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e2eaf7;
+        border-radius: 14px;
+        box-shadow: 0 4px 16px rgba(24, 52, 91, 0.05);
+    }
+
+    .learning-page .panel h2 {
+        margin: 0 0 22px;
+        color: #173b70;
+        font-size: 20px;
+    }
+
+    .learning-page form {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .learning-page .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+        margin-bottom: 20px;
+    }
+
+    .learning-page .field > label {
+        display: block;
+        color: #263b5a;
+        font-weight: 700;
+    }
+
+    .learning-page .field input[type="text"],
+    .learning-page .field select,
+    .learning-page .field textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 12px 14px;
+        box-sizing: border-box;
+        border: 1px solid #cfd8e6;
+        border-radius: 8px;
+        background: #fff;
+        color: #182b48;
+        font: inherit;
+        outline: none;
+    }
+
+    .learning-page .field input:focus,
+    .learning-page .field select:focus,
+    .learning-page .field textarea:focus {
+        border-color: #0868ed;
+        box-shadow: 0 0 0 3px rgba(8, 104, 237, 0.1);
+    }
+
+    .learning-page .field textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .learning-page .check-list {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        max-height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 5px 14px;
+        box-sizing: border-box;
+        border: 1px solid #e2eaf7;
+        border-radius: 10px;
+        background: #fbfdff;
+    }
+
+    .learning-page .check-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 11px;
+        width: 100%;
+        min-width: 0;
+        padding: 13px 2px;
+        margin: 0;
+        border-bottom: 1px solid #edf1f7;
+        box-sizing: border-box;
+        cursor: pointer;
+        line-height: 1.5;
+    }
+
+    .learning-page .check-row:last-child {
+        border-bottom: none;
+    }
+
+    .learning-page .check-row input[type="checkbox"] {
+        flex: 0 0 17px;
+        width: 17px;
+        height: 17px;
+        margin: 3px 0 0;
+        accent-color: #0868ed;
+        cursor: pointer;
+    }
+
+    .learning-page .publication-details {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        color: #263b5a;
+    }
+
+    .learning-page .publication-title {
+        display: block;
+        font-weight: 700;
+    }
+
+    .learning-page .publication-authors {
+        display: block;
+        margin-top: 3px;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .learning-page .hint {
+        display: block;
+        margin-top: 8px;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .learning-page .empty-publications {
+        padding: 14px 2px;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .learning-page .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+    .learning-page .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        background: #0868ed;
+        color: #fff;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .learning-page .btn:hover {
+        background: #0758ca;
+    }
+
+    .learning-page .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    .learning-page .btn-light {
+        background: #edf4ff;
+        color: #0868ed;
+    }
+
+    .learning-page .btn-light:hover {
+        background: #dceaff;
+    }
+
+    @media (max-width: 650px) {
+        .learning-page .panel {
+            padding: 17px;
         }
 
-        .container {
-            background: white;
-            padding: 30px;
-            width: 450px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .learning-page .page-heading h1 {
+            font-size: 23px;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
+        .learning-page .btn-row {
+            flex-direction: column;
         }
 
-        label {
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 5px;
-        }
-
-        input,
-        select,
-        textarea {
+        .learning-page .btn-row .btn {
             width: 100%;
-            padding: 10px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
+    }
+</style>
 
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
+<div class="learning-page">
 
-        .publications-box {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin-top: 5px;
-            max-height: 180px;
-            overflow-y: auto;
-            background-color: #fafafa;
-        }
+    <div class="page-heading">
+        <h1>Create Learning Path</h1>
+        <p>
+            Create a structured learning journey and connect relevant academic publications.
+        </p>
+    </div>
 
-        .publication-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
+    <section class="panel">
+        <h2>Learning Path Details</h2>
 
-        .publication-item input {
-            width: auto;
-            margin-top: 3px;
-        }
+        <form method="POST">
 
-        .publication-item label {
-            margin: 0;
-            cursor: pointer;
-            line-height: 1.4;
-        }
+            <div class="field">
+                <label for="skill_id">Skill</label>
 
-        .no-publications {
-            color: #777;
-            font-size: 14px;
-        }
+                <select name="skill_id" id="skill_id" required>
+                    <option value="">Select a Skill</option>
 
-        button {
-            width: 100%;
-            padding: 11px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-        }
+                    {% for skill in skills %}
+                    <option value="{{ skill['skill_id'] }}">
+                        {{ skill['skill_name'] }}
+                    </option>
+                    {% endfor %}
+                </select>
 
-        button:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
+                {% if not skills %}
+                <span class="hint">
+                    No skills are available yet. Create a skill first using Manage Skills.
+                </span>
+                {% endif %}
+            </div>
 
-<body>
+            <div class="field">
+                <label for="title">Learning Path Title</label>
 
-<div class="container">
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Example: Machine Learning Fundamentals"
+                    required
+                >
+            </div>
 
-    <h2>Create Learning Path</h2>
+            <div class="field">
+                <label for="description">Description</label>
 
-    <form method="POST">
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Enter the learning path description"
+                ></textarea>
+            </div>
 
-        <!-- Skill -->
+            <div class="field">
+                <label>Academic Publications</label>
 
-        <label>Skill</label>
+                <div class="check-list">
 
-        <select name="skill_id" required>
+                    {% if publications %}
 
-            <option value="">Select a Skill</option>
-
-            {% for skill in skills %}
-
-                <option value="{{ skill['skill_id'] }}">
-                    {{ skill['skill_name'] }}
-                </option>
-
-            {% endfor %}
-
-        </select>
-
-
-        <!-- Learning Path Title -->
-
-        <label>Learning Path Title</label>
-
-        <input
-            type="text"
-            name="title"
-            placeholder="Example: Machine Learning Fundamentals"
-            required
-        >
-
-
-        <!-- Description -->
-
-        <label>Description</label>
-
-        <textarea
-            name="description"
-            placeholder="Enter the learning path description"
-        ></textarea>
-
-
-        <!-- Academic Publications -->
-
-        <label>Academic Publications</label>
-
-        <div class="publications-box">
-
-            {% if publications %}
-
-                {% for publication in publications %}
-
-                    <div class="publication-item">
-
-                        <input
-                            type="checkbox"
-                            name="publication_ids"
-                            value="{{ publication['publication_id'] }}"
-                            id="publication_{{ publication['publication_id'] }}"
+                        {% for publication in publications %}
+                        <label
+                            class="check-row"
+                            for="publication_{{ publication['publication_id'] }}"
                         >
+                            <input
+                                type="checkbox"
+                                name="publication_ids"
+                                value="{{ publication['publication_id'] }}"
+                                id="publication_{{ publication['publication_id'] }}"
+                            >
 
-                        <label for="publication_{{ publication['publication_id'] }}">
+                            <span class="publication-details">
+                                <span class="publication-title">
+                                    {{ publication['title'] }}
+                                    {% if publication['year'] %}
+                                        ({{ publication['year'] }})
+                                    {% endif %}
+                                </span>
 
-                            {{ publication['title'] }}
-
-                            {% if publication['year'] %}
-                                ({{ publication['year'] }})
-                            {% endif %}
-
+                                {% if publication['authors'] %}
+                                <span class="publication-authors">
+                                    {{ publication['authors'] }}
+                                </span>
+                                {% endif %}
+                            </span>
                         </label>
+                        {% endfor %}
 
-                    </div>
+                    {% else %}
+                        <div class="empty-publications">
+                            No academic publications have been added yet.
+                            Add publications from Manage Publications.
+                        </div>
+                    {% endif %}
 
-                {% endfor %}
-
-            {% else %}
-
-                <div class="no-publications">
-                    No academic publications have been added yet.
                 </div>
 
-            {% endif %}
+                <span class="hint">
+                    Select the publications you want to associate with this learning path.
+                </span>
+            </div>
 
-        </div>
+            <div class="btn-row">
+                <button
+                    type="submit"
+                    class="btn"
+                    {% if not skills %}disabled{% endif %}
+                >
+                    + Create Learning Path
+                </button>
 
+                <a
+                    href="{{ url_for('instructor_dashboard') }}"
+                    class="btn btn-light"
+                >
+                    Back to Dashboard
+                </a>
+            </div>
 
-        <!-- Submit -->
-
-        <button type="submit">
-            Create Learning Path
-        </button>
-
-    </form>
+        </form>
+    </section>
 
 </div>
 
-</body>
-</html>
+{% endblock %}

@@ -1,99 +1,161 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Skill</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+{% extends "base_instructor.html" %}
+
+{% block title %}Manage Skills | Learning Path Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .page-heading {
+        margin: 0 0 8px;
+        color: #173b70;
+        font-size: 28px;
+    }
+
+    .page-description {
+        color: #64748b;
+        margin: 0 0 24px;
+        line-height: 1.6;
+    }
+
+    .form-card {
+        background: #fff;
+        border: 1px solid #e5ecf7;
+        border-radius: 14px;
+        padding: 28px;
+        max-width: 850px;
+        box-shadow: 0 4px 16px rgba(24, 52, 91, 0.05);
+    }
+
+    .form-card h2 {
+        margin: 0 0 22px;
+        font-size: 20px;
+        color: #173b70;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 700;
+        color: #243b5b;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #d5dfed;
+        border-radius: 8px;
+        background: #fff;
+        color: #17243b;
+        font: inherit;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: #0868ed;
+        box-shadow: 0 0 0 3px rgba(8, 104, 237, 0.1);
+    }
+
+    .form-group textarea {
+        min-height: 130px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        display: inline-block;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .primary-button {
+        color: white;
+        background: #0868ed;
+    }
+
+    .primary-button:hover {
+        background: #0758cc;
+    }
+
+    .secondary-button {
+        background: #edf4ff;
+        color: #0868ed;
+    }
+
+    .notice {
+        padding: 12px 14px;
+        margin-bottom: 18px;
+        border-radius: 8px;
+        background: #edf4ff;
+        color: #24466f;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+        .form-card {
+            padding: 18px;
         }
 
-        .container {
-            background: white;
-            padding: 30px;
-            width: 450px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .page-heading {
+            font-size: 23px;
         }
+    }
+</style>
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+<h1 class="page-heading">Manage Skills</h1>
+<p class="page-description">
+    Create and organize skills that learners can develop through structured learning paths.
+</p>
 
-        label {
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 5px;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        button {
-            width: 100%;
-            padding: 11px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <h2>Create Skill</h2>
+<section class="form-card">
+    <h2>Create a New Skill</h2>
 
     <form method="POST">
+        <div class="form-group">
+            <label for="skill_name">Skill Name</label>
+            <input
+                type="text"
+                id="skill_name"
+                name="skill_name"
+                placeholder="Example: Machine Learning"
+                required
+            >
+        </div>
 
-        <label>Skill Name</label>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Enter a description of the skill"
+            ></textarea>
+        </div>
 
-        <input
-            type="text"
-            name="skill_name"
-            placeholder="Example: Machine Learning"
-            required
-        >
-
-        <label>Description</label>
-
-        <textarea
-            name="description"
-            placeholder="Enter a description of the skill"
-        ></textarea>
-
-        <button type="submit">
-            Create Skill
-        </button>
-
+        <div class="form-actions">
+            <button type="submit" class="primary-button">Create Skill</button>
+            <a href="{{ url_for('instructor_dashboard') }}" class="secondary-button">
+                Back to Dashboard
+            </a>
+        </div>
     </form>
-
-</div>
-
-</body>
-</html>
+</section>
+{% endblock %}

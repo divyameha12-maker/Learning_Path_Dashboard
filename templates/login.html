@@ -1,84 +1,257 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Learning Path Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Learning Path Dashboard - Login</title>
 
     <style>
-        body {
-            font-family: Arial;
-            background: #f4f6f8;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 900px;
-            max-width: 90%;
-            margin: 80px auto;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-container {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-        }
-
-        .login-box {
-            background: white;
-            width: 400px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .login-box h2 {
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
+        * {
             box-sizing: border-box;
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #2878f0;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 24px;
+            font-family: Arial, sans-serif;
+            color: #102650;
+            background:
+                radial-gradient(circle at 5% 5%, #c8e3ff 0, transparent 30%),
+                radial-gradient(circle at 95% 95%, #d7e8ff 0, transparent 35%),
+                #f3f7ff;
         }
 
-        button:hover {
-            background: #125ac0;
+        .page-header {
+            text-align: center;
+            margin: 0 auto 32px;
+        }
+
+        .brand-icon {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: clamp(25px, 3vw, 34px);
+            color: #102650;
+        }
+
+        .tagline {
+            margin: 10px 0 0;
+            color: #71809a;
+            font-size: 15px;
+        }
+
+        .login-container {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 28px;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: stretch;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.97);
+            border: 1px solid #e4ebf8;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 15px 40px rgba(35, 73, 130, 0.12);
+        }
+
+        .role-icon {
+            width: 76px;
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: #e7f0ff;
+            color: #1670f5;
+            font-size: 36px;
+        }
+
+        .instructor-card .role-icon {
+            background: #f0e8ff;
+            color: #8138e8;
+        }
+
+        .login-card h2 {
+            margin: 0;
+            text-align: center;
+            font-size: 27px;
+            color: #102650;
+        }
+
+        .description {
+            margin: 10px 0 27px;
+            text-align: center;
+            color: #71809a;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 22px;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 8px;
+            color: #263653;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            height: 49px;
+            padding: 12px 14px;
+            border: 1px solid #d8e1f0;
+            border-radius: 10px;
+            background: #fbfcff;
+            color: #243653;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #3478e5;
+            box-shadow: 0 0 0 3px rgba(52, 120, 229, 0.12);
+        }
+
+        input::placeholder {
+            color: #9aa6b9;
+        }
+
+        .password-input {
+            padding-right: 65px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #3268c5;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-button {
+            width: 100%;
+            min-height: 49px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(100deg, #0878f9, #1765e8);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 15px rgba(23, 101, 232, 0.18);
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 9px 20px rgba(23, 101, 232, 0.25);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 20px 0;
+            color: #8290a7;
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e1e7f1;
+        }
+
+        .register-link {
+            display: block;
+            padding: 13px 10px;
+            border: 1px solid #d8e1f0;
+            border-radius: 9px;
+            text-align: center;
+            color: #4c5d78;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .register-link strong {
+            color: #1268e8;
+        }
+
+        .register-link:hover {
+            background: #f3f7ff;
         }
 
         .error {
-            color: red;
-            text-align: center;
+            margin-top: 15px;
+            padding: 11px;
+            border: 1px solid #ffd4d4;
+            border-radius: 8px;
+            background: #fff0f0;
+            color: #b42332;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
-        .register {
+        .home-link {
+            display: block;
+            margin-top: 22px;
             text-align: center;
-            margin-top: 20px;
+            color: #1268e8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
         }
 
-        @media(max-width:700px) {
-            .login-container {
-                flex-direction: column;
-                align-items: center;
+        .home-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 25px 16px;
             }
 
-            .login-box {
-                width: 100%;
+            .page-header {
+                margin-bottom: 25px;
+            }
+
+            .login-container {
+                grid-template-columns: 1fr;
+                gap: 22px;
+                max-width: 440px;
+            }
+
+            .login-card {
+                padding: 28px 23px;
+            }
+
+            .login-card h2 {
+                font-size: 24px;
             }
         }
     </style>
@@ -86,100 +259,158 @@
 
 <body>
 
-<div class="container">
+    <header class="page-header">
+        <div class="brand-icon" aria-hidden="true">🎓</div>
+        <h1>Learning Path Dashboard</h1>
+        <p class="tagline">Learn &nbsp; · &nbsp; Build &nbsp; · &nbsp; Grow</p>
+    </header>
 
-    <h1>Learning Path Dashboard</h1>
+    <main class="login-container">
 
-    <div class="login-container">
+        <!-- INSTRUCTOR LOGIN CARD -->
+        <section class="login-card instructor-card">
 
-        <!-- INSTRUCTOR -->
-
-        <div class="login-box">
+            <div class="role-icon" aria-hidden="true">👩‍🏫</div>
 
             <h2>Instructor Login</h2>
 
-            {% if instructor_error %}
-                <p class="error">
-                    {{ instructor_error }}
-                </p>
-            {% endif %}
+            <p class="description">
+                Create and manage learning paths and resources.
+            </p>
 
-            <form action="{{ url_for('instructor_login') }}" method="POST">
+            <form method="POST" action="{{ url_for('instructor_login') }}">
 
+                <label for="instructor-email">Email Address</label>
                 <input
                     type="email"
+                    id="instructor-email"
                     name="email"
-                    placeholder="Instructor Email"
+                    placeholder="Enter your email"
+                    autocomplete="username"
                     required
                 >
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    required
-                >
+                <label for="instructor-password">Password</label>
 
-                <button type="submit">
+                <div class="input-wrapper">
+                    <input
+                        type="password"
+                        id="instructor-password"
+                        name="password"
+                        class="password-input"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="instructor-password"
+                    >Show</button>
+                </div>
+
+                <button type="submit" class="login-button">
                     Instructor Login
                 </button>
 
             </form>
 
-            <div class="register">
-                <a href="{{ url_for('register') }}">
-                    Create Instructor Account
-                </a>
-            </div>
+            <div class="divider">OR</div>
 
-        </div>
+            <a class="register-link" href="{{ url_for('register') }}">
+                Don't have an account?
+                <strong>Register as Instructor</strong>
+            </a>
+
+            {% if instructor_error %}
+                <div class="error" role="alert">
+                    {{ instructor_error }}
+                </div>
+            {% endif %}
+
+        </section>
 
 
-        <!-- LEARNER -->
+        <!-- LEARNER LOGIN CARD -->
+        <section class="login-card learner-card">
 
-        <div class="login-box">
+            <div class="role-icon" aria-hidden="true">👤</div>
 
             <h2>Learner Login</h2>
 
-            {% if learner_error %}
-                <p class="error">
-                    {{ learner_error }}
-                </p>
-            {% endif %}
+            <p class="description">
+                Access your personalized learning paths and progress.
+            </p>
 
-            <form action="{{ url_for('learner_login') }}" method="POST">
+            <form method="POST" action="{{ url_for('learner_login') }}">
 
+                <label for="learner-email">Email Address</label>
                 <input
                     type="email"
+                    id="learner-email"
                     name="email"
-                    placeholder="Learner Email"
+                    placeholder="Enter your email"
+                    autocomplete="username"
                     required
                 >
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    required
-                >
+                <label for="learner-password">Password</label>
 
-                <button type="submit">
+                <div class="input-wrapper">
+                    <input
+                        type="password"
+                        id="learner-password"
+                        name="password"
+                        class="password-input"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="learner-password"
+                    >Show</button>
+                </div>
+
+                <button type="submit" class="login-button">
                     Learner Login
                 </button>
 
             </form>
 
-            <div class="register">
-                <a href="{{ url_for('learner_register') }}">
-                    Create Learner Account
-                </a>
-            </div>
+            <div class="divider">OR</div>
 
-        </div>
+            <a class="register-link" href="{{ url_for('learner_register') }}">
+                Don't have an account?
+                <strong>Register as Learner</strong>
+            </a>
 
-    </div>
+            {% if learner_error %}
+                <div class="error" role="alert">
+                    {{ learner_error }}
+                </div>
+            {% endif %}
 
-</div>
+        </section>
+
+    </main>
+
+    <a class="home-link" href="/">⌂ &nbsp; Back to Home</a>
+
+    <script>
+        document.querySelectorAll(".toggle-password").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const input = document.getElementById(button.dataset.target);
+                const hidden = input.type === "password";
+
+                input.type = hidden ? "text" : "password";
+                button.textContent = hidden ? "Hide" : "Show";
+            });
+        });
+    </script>
 
 </body>
 </html>

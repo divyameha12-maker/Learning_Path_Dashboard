@@ -1,165 +1,311 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Learning Resource</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+{% extends "base_instructor.html" %}
+
+{% block title %}Manage Resources{% endblock %}
+
+{% block content %}
+
+<style>
+    .resource-page {
+        width: 100%;
+        max-width: 1100px;
+        min-width: 0;
+        margin: 0 auto;
+    }
+
+    .resource-page .page-heading {
+        margin: 0 0 20px;
+    }
+
+    .resource-page .page-heading h1 {
+        margin: 0 0 8px;
+        color: #173b70;
+        font-size: 26px;
+        line-height: 1.3;
+    }
+
+    .resource-page .page-heading p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    .resource-page .panel {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding: 26px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e2eaf7;
+        border-radius: 14px;
+        box-shadow: 0 4px 16px rgba(24, 52, 91, 0.05);
+    }
+
+    .resource-page .panel h2 {
+        margin: 0 0 22px;
+        color: #173b70;
+        font-size: 20px;
+    }
+
+    .resource-page form {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .resource-page .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+        margin-bottom: 20px;
+    }
+
+    .resource-page .field label {
+        display: block;
+        color: #263b5a;
+        font-weight: 700;
+    }
+
+    .resource-page .field input:not([type="file"]),
+    .resource-page .field select,
+    .resource-page .field textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #cfd8e6;
+        border-radius: 8px;
+        background: #fff;
+        color: #182b48;
+        font: inherit;
+        outline: none;
+    }
+
+    .resource-page .field input:focus,
+    .resource-page .field select:focus,
+    .resource-page .field textarea:focus {
+        border-color: #0868ed;
+        box-shadow: 0 0 0 3px rgba(8, 104, 237, 0.1);
+    }
+
+    .resource-page .field input[type="file"] {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 12px;
+        border: 1px solid #cfd8e6;
+        border-radius: 8px;
+        background: #fbfdff;
+        color: #334766;
+        font: inherit;
+    }
+
+    .resource-page .field textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .resource-page .hint {
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .resource-page .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .resource-page .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 8px;
+        background: #0868ed;
+        color: #fff;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .resource-page .btn:hover {
+        background: #0758ca;
+    }
+
+    .resource-page .btn-light {
+        background: #edf4ff;
+        color: #0868ed;
+    }
+
+    .resource-page .btn-light:hover {
+        background: #dceaff;
+    }
+
+    .resource-page .notice {
+        padding: 13px 15px;
+        margin-bottom: 18px;
+        border: 1px solid #d9e7ff;
+        border-radius: 9px;
+        background: #f2f7ff;
+        color: #345578;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 650px) {
+        .resource-page .panel {
+            padding: 17px;
         }
 
-        .container {
-            background: white;
-            padding: 30px;
-            width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        .resource-page .page-heading h1 {
+            font-size: 23px;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
+        .resource-page .btn-row {
+            flex-direction: column;
         }
 
-        label {
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 5px;
-        }
-
-        input,
-        select,
-        textarea {
+        .resource-page .btn-row .btn {
             width: 100%;
-            padding: 10px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
+    }
+</style>
 
-        textarea {
-            height: 90px;
-            resize: vertical;
-        }
+<div class="resource-page">
 
-        .file-section,
-        .url-section {
-            margin-top: 15px;
-        }
+    <div class="page-heading">
+        <h1>Manage Resources</h1>
+        <p>
+            Add PDFs, Word documents, videos, academic literature, and other learning materials.
+        </p>
+    </div>
 
-        button {
-            width: 100%;
-            padding: 11px;
-            margin-top: 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-        }
+    <section class="panel">
+        <h2>Add Learning Resource</h2>
 
-        button:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
-
-<body>
-
-<div class="container">
-
-    <h2>Add Learning Resource</h2>
-
-    <form method="POST" enctype="multipart/form-data">
-
-        <label>Learning Path</label>
-
-        <select name="path_id" required>
-
-            <option value="">Select Learning Path</option>
-
-            {% for path in learning_paths %}
-                <option value="{{ path['path_id'] }}">
-                    {{ path['title'] }}
-                </option>
-            {% endfor %}
-
-        </select>
-
-
-        <label>Resource Title</label>
-
-        <input
-            type="text"
-            name="title"
-            placeholder="Example: Introduction to Machine Learning"
-            required
-        >
-
-
-        <label>Resource Type</label>
-
-        <select name="resource_type" id="resource_type" required>
-
-            <option value="">Select Resource Type</option>
-
-            <option value="PDF">PDF</option>
-
-            <option value="Word">Word Document</option>
-
-            <option value="Video">Video</option>
-
-            <option value="Literature">Academic Literature</option>
-
-        </select>
-
-
-        <div class="file-section">
-
-            <label>Upload File</label>
-
-            <input
-                type="file"
-                name="resource_file"
-                accept=".pdf,.doc,.docx"
-            >
-
+        <div class="notice">
+            Choose a learning path and provide a resource title. You can upload a supported
+            document, add a resource URL, or provide both when appropriate.
         </div>
 
+        <form method="POST" enctype="multipart/form-data">
 
-        <div class="url-section">
+            <div class="field">
+                <label for="path_id">Learning Path</label>
 
-            <label>Resource URL</label>
+                <select name="path_id" id="path_id" required>
+                    <option value="">Select Learning Path</option>
 
-            <input
-                type="url"
-                name="url"
-                placeholder="https://..."
-            >
+                    {% for path in learning_paths %}
+                    <option value="{{ path['path_id'] }}">
+                        {{ path['title'] }}
+                    </option>
+                    {% endfor %}
+                </select>
 
-        </div>
+                {% if not learning_paths %}
+                <span class="hint">
+                    No learning paths are available. Create a learning path first.
+                </span>
+                {% endif %}
+            </div>
 
+            <div class="field">
+                <label for="title">Resource Title</label>
 
-        <label>Description</label>
+                <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    placeholder="Example: Introduction to Machine Learning"
+                    required
+                >
+            </div>
 
-        <textarea
-            name="description"
-            placeholder="Describe this learning resource"
-        ></textarea>
+            <div class="field">
+                <label for="resource_type">Resource Type</label>
 
+                <select name="resource_type" id="resource_type" required>
+                    <option value="">Select Resource Type</option>
+                    <option value="PDF">PDF</option>
+                    <option value="Word">Word Document</option>
+                    <option value="Video">Video</option>
+                    <option value="Literature">Academic Literature</option>
+                </select>
+            </div>
 
-        <button type="submit">
-            Add Resource
-        </button>
+            <div class="field">
+                <label for="resource_file">Upload File</label>
 
-    </form>
+                <input
+                    type="file"
+                    name="resource_file"
+                    id="resource_file"
+                    accept=".pdf,.doc,.docx"
+                >
+
+                <span class="hint">
+                    Supported document formats: PDF, DOC, and DOCX.
+                </span>
+            </div>
+
+            <div class="field">
+                <label for="url">Resource URL</label>
+
+                <input
+                    type="url"
+                    name="url"
+                    id="url"
+                    placeholder="https://..."
+                >
+
+                <span class="hint">
+                    For videos, enter the video link. For online materials, enter the relevant URL.
+                </span>
+            </div>
+
+            <div class="field">
+                <label for="description">Description</label>
+
+                <textarea
+                    name="description"
+                    id="description"
+                    placeholder="Describe this learning resource"
+                ></textarea>
+            </div>
+
+            <div class="btn-row">
+                <button
+                    type="submit"
+                    class="btn"
+                    {% if not learning_paths %}disabled{% endif %}
+                >
+                    + Add Resource
+                </button>
+
+                <a
+                    href="{{ url_for('instructor_dashboard') }}"
+                    class="btn btn-light"
+                >
+                    Back to Dashboard
+                </a>
+            </div>
+
+        </form>
+    </section>
 
 </div>
 
-</body>
-</html>
+{% endblock %}

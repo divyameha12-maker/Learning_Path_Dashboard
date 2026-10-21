@@ -427,15 +427,15 @@ def instructor_login():
 
         return render_template(
 
-            "login.html",
+            "instructor_login.html",
 
-            instructor_error="Invalid instructor email or password."
+            error="Invalid instructor email or password."
 
         )
 
     return render_template(
 
-        "login.html"
+        "instructor_login.html"
 
     )
 
@@ -470,78 +470,103 @@ def instructor_logout():
 # ===================================================
 
 @app.route("/instructor-dashboard")
-
 def instructor_dashboard():
-
-    instructor_id = session.get(
-
-        "instructor_id"
-
-    )
+    instructor_id = session.get("instructor_id")
 
     if instructor_id is None:
-
-        return redirect(
-
-            url_for("login")
-
-        )
+        return redirect(url_for("login"))
 
     connection = get_db_connection()
 
-    instructor = connection.execute("""
+    try:
+        instructor = connection.execute("""
+            SELECT user_id, name, email
+            FROM users
+            WHERE user_id = ? AND role = 'Instructor'
+        """, (instructor_id,)).fetchone()
 
-        SELECT
+        if instructor is None:
+            session.pop("instructor_id", None)
+            return redirect(url_for("login"))
 
-            user_id,
+        # Show all existing learning paths so older paths are not hidden
+        # if they were created before instructor ownership was recorded.
+        learning_paths = connection.execute("""
+            SELECT
+                lp.path_id,
+                lp.title,
+                lp.description,
+                s.skill_name,
+                COUNT(DISTINCT lpr.resource_id) AS resource_count
+            FROM learning_paths lp
+            LEFT JOIN skills s ON s.skill_id = lp.skill_id
+            LEFT JOIN learning_path_resources lpr ON lpr.path_id = lp.path_id
+            WHERE LOWER(TRIM(lp.title)) !=
+                  'probability and statistics for machine learning'
+            GROUP BY lp.path_id, lp.title, lp.description, s.skill_name
+            ORDER BY lp.path_id DESC
+        """).fetchall()
 
-            name,
+        total_paths = connection.execute("""
+            SELECT COUNT(*) AS total
+            FROM learning_paths
+            WHERE LOWER(TRIM(title)) !=
+                  'probability and statistics for machine learning'
+        """).fetchone()["total"]
 
-            email
+        total_resources = connection.execute("""
+            SELECT COUNT(DISTINCT resource_id) AS total
+            FROM resources
+        """).fetchone()["total"]
 
-        FROM users
+        total_learners = connection.execute("""
+            SELECT COUNT(*) AS total
+            FROM users
+            WHERE LOWER(role) = 'learner'
+        """).fetchone()["total"]
 
-        WHERE user_id = ?
+        total_publications = connection.execute("""
+            SELECT COUNT(*) AS total FROM publications
+        """).fetchone()["total"]
 
-        AND role = 'Instructor'
+        recent_learners = connection.execute("""
+            SELECT user_id, name, email
+            FROM users
+            WHERE LOWER(role) = 'learner'
+            ORDER BY user_id DESC
+            LIMIT 5
+        """).fetchall()
 
-    """, (
+        recent_resources = connection.execute("""
+            SELECT
+                r.resource_id,
+                r.title,
+                r.resource_type,
+                lp.title AS path_title
+            FROM resources r
+            LEFT JOIN learning_path_resources lpr
+                ON lpr.resource_id = r.resource_id
+            LEFT JOIN learning_paths lp
+                ON lp.path_id = lpr.path_id
+            GROUP BY r.resource_id, r.title, r.resource_type, lp.title
+            ORDER BY r.resource_id DESC
+            LIMIT 5
+        """).fetchall()
 
-        instructor_id,
-
-    )).fetchone()
-
-    if instructor is None:
-
-        session.pop(
-
-            "instructor_id",
-
-            None
-
+        return render_template(
+            "instructor_dashboard.html",
+            instructor=instructor,
+            learning_paths=learning_paths,
+            total_paths=total_paths,
+            total_resources=total_resources,
+            total_learners=total_learners,
+            total_publications=total_publications,
+            recent_learners=recent_learners,
+            recent_resources=recent_resources
         )
 
+    finally:
         connection.close()
-
-        return redirect(
-
-            url_for("login")
-
-        )
-
-    connection.close()
-
-    return render_template(
-
-        "instructor_dashboard.html",
-
-        instructor=instructor
-
-    )
-
-# ===================================================
-
-# ENSURE PUBLICATIONS TABLE
 
 # ===================================================
 
@@ -1015,15 +1040,15 @@ def learner_login():
 
         return render_template(
 
-            "login.html",
+            "learner_login.html",
 
-            learner_error="Invalid learner email or password."
+            error="Invalid learner email or password."
 
         )
 
     return render_template(
 
-        "login.html"
+        "learner_login.html"
 
     )
 
